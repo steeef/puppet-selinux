@@ -22,9 +22,16 @@ class selinux(
   include stdlib
   include selinux::params
 
-  anchor { 'selinux::begin': }
-  -> class { 'selinux::config':
-      mode => $mode,
+  file { $selinux::params::modules_dir:
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0440',
   }
-  -> anchor { 'selinux::end': }
+
+  anchor { 'selinux::begin': } ->
+  class { 'selinux::config':
+      mode => $mode,
+  } ->
+  anchor { 'selinux::end': }
 }
