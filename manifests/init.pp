@@ -17,7 +17,7 @@
 #  include selinux
 #
 class selinux(
-  $mode = 'permissive'
+  $mode = 'enforcing'
 ) {
   include stdlib
   include selinux::params
