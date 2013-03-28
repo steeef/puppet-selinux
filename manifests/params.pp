@@ -4,8 +4,12 @@
 #  This class provides default parameters for the selinux class
 #
 # Sample Usage:
-#  mod_dir = $selinux::params::sx_mod_dir
 #
-class selinux::params {
-  $sx_mod_dir = '/usr/share/selinux'
+# file { "$selinux::params::modules_dir"/foobar.te":
+#   ensure => present,
+# }
+#
+class selinux::params (
+  $modules_dir = "${::settings::vardir}/selinux"
+  ) {
 }
