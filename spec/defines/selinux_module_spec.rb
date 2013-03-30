@@ -2,10 +2,10 @@ require 'spec_helper'
 
 # $stdout.puts self.catalogue.to_yaml
 
-describe 'selinux::module', :type => :define do 
+describe 'selinux::module', :type => :define do
   let(:title) { 'selinux::module' }
 
-  describe "loading module" do 
+  describe "loading module" do
     modname = 'rsynclocal'
     source = "puppet:///modules/selinux/#{modname}.te"
     let(:title) { modname }
