@@ -11,7 +11,7 @@
 # Sample Usage:
 #
 
-selinux::module { 'apache-selinux':
+selinux::module { 'rsynclocal':
   ensure => 'present',
-  source => 'puppet:///modules/apache/selinux/apache.te',
+  source => 'puppet:///modules/selinux/rsynclocal.te',
 }
