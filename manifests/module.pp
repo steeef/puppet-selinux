@@ -24,7 +24,7 @@
 #  - SELinux
 #
 # Sample Usage:
-#  selinux::module{ 'apache':
+#  selinux::module { 'apache':
 #    ensure => 'present',
 #    source => 'puppet:///modules/selinux/apache.te',
 #  }
@@ -32,7 +32,10 @@
 define selinux::module(
   $source,
   $ensure  = 'present',
+  $modules_dir = $selinux::params::modules_dir,
 ) {
+  include selinux
+  include selinux::install
   # Set Resource Defaults
   File {
     owner => 'root',
@@ -44,20 +47,20 @@ define selinux::module(
   Exec {
     path        => '/sbin:/usr/sbin:/bin:/usr/bin',
     refreshonly => true,
-    cwd         => $selinux::params::modules_dir,
+    cwd         => $modules_dir,
   }
 
   ## Begin Configuration
-  file { "${selinux::params::modules_dir}/${name}.te":
+  file { "${modules_dir}/${name}.te":
     ensure  => $ensure,
     source  => $source,
     tag     => 'selinux-module',
-    require => File[$selinux::params::modules_dir],
+    require => File[$modules_dir],
   }
-  file { "${selinux::params::modules_dir}/${name}.mod":
+  file { "${modules_dir}/${name}.mod":
     tag => ['selinux-module-build', 'selinux-module'],
   }
-  file { "${selinux::params::modules_dir}/${name}.pp":
+  file { "${modules_dir}/${name}.pp":
     tag => ['selinux-module-build', 'selinux-module'],
   }
 
@@ -75,7 +78,7 @@ define selinux::module(
       }
 
       # Set dependency ordering
-      File["${selinux::params::modules_dir}/${name}.te"]
+      File["${modules_dir}/${name}.te"]
       ~> Exec["${name}-buildmod"]
       ~> Exec["${name}-buildpp"]
       ~> Exec["${name}-install"]
