@@ -32,9 +32,14 @@
 define selinux::module(
   $source,
   $ensure  = 'present',
-  $modules_dir = $selinux::params::modules_dir,
+  $modules_dir = undef,
 ) {
   include selinux
+  if $module_dir {
+    $selinux_modules_dir = $module_dir
+  } else {
+    $selinux_modules_dir = $selinux::params::modules_dir
+  }
   include selinux::install
   # Set Resource Defaults
   File {
@@ -47,20 +52,20 @@ define selinux::module(
   Exec {
     path        => '/sbin:/usr/sbin:/bin:/usr/bin',
     refreshonly => true,
-    cwd         => $modules_dir,
+    cwd         => $selinux_modules_dir,
   }
 
   ## Begin Configuration
-  file { "${modules_dir}/${name}.te":
+  file { "${selinux_modules_dir}/${name}.te":
     ensure  => $ensure,
     source  => $source,
     tag     => 'selinux-module',
-    require => File[$modules_dir],
+    require => File[$selinux_modules_dir],
   }
-  file { "${modules_dir}/${name}.mod":
+  file { "${selinux_modules_dir}/${name}.mod":
     tag => ['selinux-module-build', 'selinux-module'],
   }
-  file { "${modules_dir}/${name}.pp":
+  file { "${selinux_modules_dir}/${name}.pp":
     tag => ['selinux-module-build', 'selinux-module'],
   }
 
@@ -78,7 +83,7 @@ define selinux::module(
       }
 
       # Set dependency ordering
-      File["${modules_dir}/${name}.te"]
+      File["${selinux_modules_dir}/${name}.te"]
       ~> Exec["${name}-buildmod"]
       ~> Exec["${name}-buildpp"]
       ~> Exec["${name}-install"]
