@@ -22,6 +22,10 @@ class selinux::config(
     path => '/bin:/sbin:/usr/bin:/usr/sbin',
   }
 
+  package { 'libselinux-utils':
+    ensure => present,
+  }
+
   $modes = [ 'enforcing', 'permissive', 'disabled' ]
   if ! ( $mode in $modes ) {
     fail('You must specify a mode (enforced, permissive, or disabled)')
@@ -33,6 +37,7 @@ class selinux::config(
       exec { "setenforce-${mode}":
         # TODO: can't do setenforce disabled
         command => "setenforce ${mode}",
+        require => Package['libselinux-utils'],
       }
     }
   }

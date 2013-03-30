@@ -17,6 +17,7 @@ describe 'selinux' do
         it { should create_class('stdlib') }
         it { should create_class('selinux::params') }
         it { should create_class('selinux::config') }
+        it { should create_package('libselinux-utils') }
         it { should create_file('/etc/sysconfig/selinux')\
           .with_content(/^SELINUX=#{param_mode}$/) }
         if current_mode != param_mode
