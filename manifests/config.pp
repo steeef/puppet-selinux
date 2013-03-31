@@ -1,10 +1,10 @@
-# Class: selinux::config
+# == Class: selinux::config
 #
-# Description
 #  This class is designed to configure the system to use SELinux on the system
 #
-# Parameters:
-#  - $mode (enforced|permissive|disabled) - sets the operating state for SELinux.
+# === Parameters:
+#  [*mode*]
+#   (enforced|permissive|disabled) - sets the operating state for SELinux.
 #
 # Actions:
 #  Configures SELinux to a specific state (enforced|permissive|disabled)
@@ -26,27 +26,47 @@ class selinux::config(
     ensure => present,
   }
 
-  $modes = [ 'enforcing', 'permissive', 'disabled' ]
-  if ! ( $mode in $modes ) {
-    fail('You must specify a mode (enforced, permissive, or disabled)')
-  }
-  if $::selinux_current_mode != $mode {
-    if $::selinux_current_mode == 'disabled' or $mode == 'disabled' {
-      notify {"A reboot is required to change from ${::selinux_current_mode} to ${mode}": }
-    } else {
-      exec { "setenforce-${mode}":
-        # TODO: can't do setenforce disabled
-        command => "setenforce ${mode}",
-        require => Package['libselinux-utils'],
-      }
-    }
-  }
-
-  file { '/etc/sysconfig/selinux':
+  file { '/etc/selinux/config':
     ensure  => present,
     owner   => 'root',
     group   => 'root',
     mode    => '0444',
     content => template('selinux/sysconfig_selinux.erb')
+  }
+
+  # we don't always run setenforce
+  if $::selinux_current_mode != $mode {
+    # only if there's change
+    case $mode {
+      'disabled': {
+        # we can't apply right now disabled, but we can set it to permissive
+        $change = "from ${::selinux_current_mode} to ${mode}"
+        notify { 'change':
+          message => "A reboot is required to change ${change}"
+        }
+        if $::selinux_current_mode == 'enforcing' {
+          exec { 'setenforce permissive':
+            require => Package['libselinux-utils'],
+          }
+        }
+      }
+      /^(permissive|enforcing)$/: {
+        if $::selinux_current_mode == 'disabled' {
+          # we can't set disabled now, it needs a reboot.
+          $change = "from ${::selinux_current_mode} to ${mode}"
+          notify { 'change':
+            message => "A reboot is required to change ${change}"
+          }
+        } else {
+          # we're going from permissive to enforcing or vice-versa
+          exec { "setenforce ${mode}":
+            require => Package['libselinux-utils'],
+          }
+        }
+      }
+      default: {
+        fail('You must specify a mode (enforced, permissive, or disabled)')
+      }
+    }
   }
 }
