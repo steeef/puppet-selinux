@@ -12,6 +12,11 @@ modules to running RHEL based system. Forked from jfryman, we added:
 - puppetlabs/stdlib >= 3.0.0
 - RedHat/Fedora based distribution
 
+# Installation
+<pre>
+puppet module install spiette/selinux
+</pre>
+
 # Synopsys
 <pre>
 include selinux
@@ -38,12 +43,13 @@ selinux::module { 'rsynclocal':
 }
 </pre>
 
-# Caveats
-The semodule command is slow. Your puppet run will be slower if you keep selinux::module disabled instead of remove.
+# Contribute
+
+Please see the [Github](https://github.com/spiette/puppet-selinux) page. We'll review  pull requests and bug reports. If the module don't do what you want, please explain your use case.
 
 # Credits
-Original module from James Fryman <james@frymanet.com>
-https://github.com/jfryman/puppet-selinux
-selinux::booleans is a contribution from GreenOgre <aggibson@cogeco.ca> 
-Concepts incorporated from:
+- Maintainer: Simon Piette <piette.simon@gmail.com>
+- Original module from James Fryman <james@frymanet.com> https://github.com/jfryman/puppet-selinux
+- selinux::booleans is a contribution from GreenOgre <aggibson@cogeco.ca> 
+- Concepts incorporated from:
 http://stuckinadoloop.wordpress.com/2011/06/15/puppet-managed-deployment-of-selinux-modules/
