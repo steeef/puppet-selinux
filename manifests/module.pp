@@ -1,33 +1,26 @@
-# Definition: selinux::module
+# == Define: selinux::module
 #
-# Description
-#  This class will either install or uninstall a SELinux module from a running
-#  system.
-#  This module allows an admin to keep .te files in text form in a repository,
-#  while allowing the system to compile and manage SELinux modules.
+#  This define will either install or uninstall a SELinux module from a running
+#  system. This module allows an admin to keep .te files in text form in a
+#  repository, while allowing the system to compile and manage SELinux modules.
 #
-#  Concepts incorporated from:
-#  http://stuckinadoloop.wordpress.com/2011/06/15/puppet-managed-deployment-of-selinux-modules/
+# === Parameters
 #
-# Parameters:
-#   - $ensure: (present|absent) - sets the state for a module
-#   - $selinux::params::modules_dir: The directory compiled modules will live on
-#   a system (default: /usr/share/selinux)
-#   - $mode: Allows an admin to set the SELinux status. (default: enforcing)
-#   - $source: the source file (either a puppet URI or local file) of the
-#   SELinux .te module
+#   [*ensure*]
+#     (present|absent) - sets the state for a module
 #
-# Actions:
-#  Compiles a module using 'checkmodule' and 'semodule_package'.
+#   [*modules_dir*]
+#      The directory compiled modules will live on a system. Defaults to
+#      /usr/share/selinux declared in $selinux::params
 #
-# Requires:
-#  - SELinux
+#   [*source*]
+#     Source file (either a puppet URI or local file) of the SELinux .te module
 #
-# Sample Usage:
-#  selinux::module { 'apache':
-#    ensure => 'present',
-#    source => 'puppet:///modules/selinux/apache.te',
-#  }
+# ===  Example
+#
+#    selinux::module { 'rsynclocal':
+#      source => 'puppet:///modules/selinux/rsynclocal.te',
+#    }
 #
 define selinux::module(
   $source,
@@ -35,17 +28,18 @@ define selinux::module(
   $modules_dir = undef,
 ) {
   include selinux
-  if $module_dir {
-    $selinux_modules_dir = $module_dir
+  include selinux::install
+  if $modules_dir {
+    $selinux_modules_dir = $modules_dir
   } else {
     $selinux_modules_dir = $selinux::params::modules_dir
   }
-  include selinux::install
+
   # Set Resource Defaults
   File {
     owner => 'root',
     group => 'root',
-    mode  => '0644',
+    mode  => '0640',
   }
 
   # Only allow refresh in the event that the initial .te file is updated.
@@ -55,23 +49,24 @@ define selinux::module(
     cwd         => $selinux_modules_dir,
   }
 
-  ## Begin Configuration
-  file { "${selinux_modules_dir}/${name}.te":
-    ensure  => $ensure,
-    source  => $source,
-    tag     => 'selinux-module',
-    require => File[$selinux_modules_dir],
-  }
-  file { "${selinux_modules_dir}/${name}.mod":
-    tag => ['selinux-module-build', 'selinux-module'],
-  }
-  file { "${selinux_modules_dir}/${name}.pp":
-    tag => ['selinux-module-build', 'selinux-module'],
-  }
-
+  $active_modules = '/etc/selinux/targeted/modules/active/modules'
   # Specific executables based on present or absent.
   case $ensure {
     present: {
+      ## Begin Configuration
+      file { "${selinux_modules_dir}/${name}.te":
+        ensure  => $ensure,
+        source  => $source,
+        tag     => 'selinux-module',
+        require => File[$selinux_modules_dir],
+      }
+      file { "${selinux_modules_dir}/${name}.mod":
+        tag => ['selinux-module-build', 'selinux-module'],
+      }
+      file { "${selinux_modules_dir}/${name}.pp":
+        tag => ['selinux-module-build', 'selinux-module'],
+      }
+
       exec { "${name}-buildmod":
         command => "checkmodule -M -m -o ${name}.mod ${name}.te",
       }
@@ -89,14 +84,16 @@ define selinux::module(
       ~> Exec["${name}-install"]
       -> File<| tag == 'selinux-module-build' |>
     }
+    disable: {
+      exec { "${name}-disable":
+        command => "semodule -d ${name}",
+      }
+    }
     absent: {
       exec { "${name}-remove":
-        command => "semodule -r ${name}.pp > /dev/null 2>&1",
+        command => "semodule -r ${name} > /dev/null 2>&1",
+        unless  => "! not -f ${active_modules}/${name}"
       }
-
-      # Set dependency ordering
-      Exec["${name}-remove"]
-      -> File<| tag == 'selinux-module' |>
     }
     default: {
       fail("Invalid status for SELinux Module: ${ensure}")
