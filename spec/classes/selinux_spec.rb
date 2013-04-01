@@ -10,6 +10,7 @@ describe 'selinux' do
         let(:params) {{ :mode => param_mode }}
         let(:facts) { {
             :osfamily               => 'RedHat',
+            :operatingsystemrelease => '6.4',
             :selinux_current_mode   => current_mode,
         } }
 

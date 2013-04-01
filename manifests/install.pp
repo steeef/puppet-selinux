@@ -3,7 +3,7 @@ class selinux::install {
   package { [
     'policycoreutils',
     'checkpolicy',
-    'selinux-policy-devel',
+    $selinux::params::selinux_policy_devel,
   ]:
     ensure => present,
   }
