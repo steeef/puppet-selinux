@@ -7,6 +7,10 @@
 #    (enforced|permissive|disabled)
 #    sets the operating state for SELinux.
 #
+#  [*installmake*]
+#    make is required to install modules. If you have the make package declared
+#    elsewhere, you want to set this to false. It defaults to true.
+#
 # === Requires:
 #  - [puppetlab/stdlib]
 #
@@ -15,8 +19,9 @@
 #  include selinux
 #
 class selinux(
-  $mode = 'enforcing'
-) {
+  $mode = 'enforcing',
+  $installmake = true,
+  ) {
   include stdlib
   include selinux::params
 
