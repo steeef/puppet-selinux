@@ -45,7 +45,7 @@ selinux::module { 'rsynclocal':
 
 # Contribute
 
-Please see the [Github](https://github.com/spiette/puppet-selinux) page. We'll review  pull requests and bug reports. If the module don't do what you want, please explain your use case.
+Please see the [Github](https://github.com/spiette/puppet-selinux) page. We'll review  pull requests and bug reports. If the module don't do what you want, please explain your use case. Testing on Debian-based distributions is welcome.
 
 # Credits
 - Maintainer: Simon Piette <piette.simon@gmail.com>
