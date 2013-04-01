@@ -1,9 +1,8 @@
-# Class: selinux::params
+# == Class: selinux::params
 #
-# Description
 #  This class provides default parameters for the selinux class
 #
-# Sample Usage:
+# === Example
 #
 # file { "$selinux::params::modules_dir"/foobar.te":
 #   ensure => present,
