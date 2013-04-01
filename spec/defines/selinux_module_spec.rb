@@ -21,7 +21,7 @@ describe 'selinux::module', :type => :define do
     it { should create_class('selinux::params') }
     it { should create_class('selinux::config') }
     it { should create_class('selinux::install') }
-    it { should create_package('selinux-policy-devel') }
+    it { should create_package('policycoreutils') }
     it { should create_package('checkpolicy') }
     it { should create_selinux__module(modname) }
     it { should create_file("/var/lib/puppet/selinux/#{modname}.te")\
