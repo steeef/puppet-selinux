@@ -7,11 +7,13 @@ describe 'selinux::module', :type => :define do
 
   describe "loading module" do
     modname = 'rsynclocal'
+    modules_dir = '/var/lib/puppet/selinux'
+    this_module_dir = "#{modules_dir}/#{modname}"
     source = "puppet:///modules/selinux/#{modname}.te"
     let(:title) { modname }
     let(:params) {{
       :source      => source,
-      :modules_dir => '/var/lib/puppet/selinux',
+      :modules_dir => modules_dir,
     }}
     let(:facts) { {
         :osfamily      => 'RedHat',
@@ -26,17 +28,17 @@ describe 'selinux::module', :type => :define do
     it { should create_package('selinux-policy-devel') }
     it { should create_package('make') }
     it { should create_selinux__module(modname) }
-    it { should create_file("/var/lib/puppet/selinux/#{modname}.te")\
+    it { should create_file("#{this_module_dir}/#{modname}.te")\
       .with(
         'ensure' => 'present',
         'source' => source,
         'tag'    => 'selinux-module'
       ) } 
-    it { should create_file("/var/lib/puppet/selinux/#{modname}.mod")\
+    it { should create_file("#{this_module_dir}/#{modname}.mod")\
       .with(
         'tag'    => ['selinux-module-build','selinux-module'],
       ) }
-    it { should create_file("/var/lib/puppet/selinux/#{modname}.pp")\
+    it { should create_file("#{this_module_dir}/#{modname}.pp")\
       .with(
         'tag'    => ['selinux-module-build','selinux-module'],
       ) }
