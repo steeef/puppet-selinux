@@ -35,26 +35,26 @@ describe 'selinux::module', :type => :define do
         'source' => source,
         'tag'    => 'selinux-module'
       ) } 
-    it { should create_file("#{this_module_dir}/#{modname}.mod")\
-      .with(
-        'tag'    => ['selinux-module-build','selinux-module'],
-      ) }
-    it { should create_file("#{this_module_dir}/#{modname}.pp")\
-      .with(
-        'tag'    => ['selinux-module-build','selinux-module'],
-      ) }
-    it { should create_exec("#{modname}-buildmod")\
-      .with(
-        'command' => "checkmodule -M -m -o #{modname}.mod #{modname}.te",
-      ) }
-    it { should create_exec("#{modname}-buildpp")\
-      .with(
-        'command' => "semodule_package -m #{modname}.mod -o #{modname}.pp",
-      ) }
-    it { should create_exec("#{modname}-install")\
-      .with(
-        'command' => "semodule -i #{modname}.pp",
-      ) }
+    #it { should create_file("#{this_module_dir}/#{modname}.mod")\
+    #  .with(
+    #    'tag'    => ['selinux-module-build','selinux-module'],
+    #  ) }
+    #it { should create_file("#{this_module_dir}/#{modname}.pp")\
+    #  .with(
+    #    'tag'    => ['selinux-module-build','selinux-module'],
+    #  ) }
+    #it { should create_exec("#{modname}-buildmod")\
+    #  .with(
+    #    'command' => "checkmodule -M -m -o #{modname}.mod #{modname}.te",
+    #  ) }
+    #it { should create_exec("#{modname}-buildpp")\
+    #  .with(
+    #    'command' => "semodule_package -m #{modname}.mod -o #{modname}.pp",
+    #  ) }
+    #it { should create_exec("#{modname}-install")\
+    #  .with(
+    #    'command' => "semodule -i #{modname}.pp",
+    #  ) }
   end
   [ '4.5', '5.8', '6.4', '7.0', '19' ].each do | osrelease |
     describe "checking package installation: #{osrelease}" do
@@ -74,6 +74,42 @@ describe 'selinux::module', :type => :define do
         it { should create_package('selinux-policy') }
       else
         it { should create_package('selinux-policy-devel') }
+      end
+    end
+  end
+  # source, fcontext
+  [
+    [ 'https://github.com/modules/site/selinux/mod.te', false ],
+    [ 'puppet:///modules/site/selinux/mod.te', false ]
+  ].each do | source, fcontext |
+    describe "parameters check #{source}, #{fcontext}" do
+      modname = 'rsynclocal'
+      modules_dir = '/var/lib/puppet/selinux'
+      let(:title) { modname }
+      let(:params) {{
+        :source      => source,
+        :fcontext    => fcontext,
+        :modules_dir => modules_dir,
+      }}
+      let(:facts) {{
+          :osfamily      => 'RedHat',
+          :operatingsystemrelease => '6.4',
+      }}
+      # scenario 1: no source
+      # scenario 2: invalid source
+      # scenario 3: valid source
+      if source != nil
+        if source !~ /(puppet|file):\/\/\/.*.te/
+          # invalid source
+          it { expect { should include_class('selinux::install') }.to\
+              raise_error(Puppet::Error, /Invalid source parameter/) }
+        else
+          # valid source
+          it { should create_file(modules_dir + "/#{modname}/#{modname}.te")\
+          .with_source(source) }
+        end
+      else
+        #no source, let's make one
       end
     end
   end

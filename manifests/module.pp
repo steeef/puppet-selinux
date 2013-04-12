@@ -13,8 +13,13 @@
 #      The directory compiled modules will live on a system. Defaults to
 #      /usr/share/selinux declared in $selinux::params
 #
+#   [*fcontext*]
+#     Whether or not a .fc file will be looked for in the same directory than
+#     the .te file. Defaults to false.
+#
 #   [*source*]
 #     Source file (either a puppet URI or local file) of the SELinux .te module
+#     Defaults to puppet:///modules/selinux/${name}.te
 #
 # ===  Example
 #
@@ -23,9 +28,10 @@
 #    }
 #
 define selinux::module(
-  $source,
   $ensure  = 'present',
+  $source = undef,
   $modules_dir = undef,
+  $fcontext = false,
 ) {
   include selinux
   include selinux::install
@@ -34,7 +40,23 @@ define selinux::module(
   } else {
     $selinux_modules_dir = $selinux::params::modules_dir
   }
+  # .te and .fc files will be placed on a $name directory
   $this_module_dir = "${selinux_modules_dir}/${name}"
+
+  if $source {
+    $tesource = $source
+  } else {
+    $tesource = "puppet:///modules/selinux/${name}/${name}.te"
+  }
+  if $tesource =~ /^((puppet|file):.*\/([^\/]*)).te$/ {
+    if $fcontext {
+      $fcsource = "#${1}/${name}.fc"
+    }
+  } else {
+    fail('Invalid source parameter')
+  }
+
+
 
   # Set Resource Defaults
   File {
