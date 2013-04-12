@@ -24,12 +24,12 @@ define selinux::boolean (
   }
 
   case $ensure {
-    on, true: {
+    on, true, present: {
       exec { "setsebool -P '${name}' true":
         unless => "getsebool '${name}' | awk '{ print \$3 }' | grep on",
       }
     }
-    off, false: {
+    off, false, absent: {
       exec { "setsebool -P '${name}' false":
         unless => "getsebool '${name}' | awk '{ print \$3 }' | grep off",
       }
