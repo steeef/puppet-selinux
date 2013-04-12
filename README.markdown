@@ -4,6 +4,7 @@ This module can set SELinux and deploy SELinux type enforcement files (.te)
 modules to running RHEL based system. Forked from jfryman, we added:
 - all enforcing/permissive/disabled switch covered
 - ability to select selinux module directory
+- a file context file (.fc) can be used with a type enforcement (.te) one
 - many bug fixes
 - puppet lint compliant code
 - full spec testing
@@ -18,11 +19,9 @@ puppet module install spiette/selinux
 </pre>
 
 # Synopsys
+## selinux class
 <pre>
 include selinux
-selinux::module { 'rsynclocal':
-    source => 'puppet:///modules/site/rsynclocal.te'
-}
 </pre>
 
 <pre>
@@ -30,6 +29,31 @@ class { 'selinux':
   mode => 'permissive'
 }
 </pre>
+## selinux::boolean
+<pre>
+selinux::boolean { 'allow_ssh_keysign':
+  ensure => present
+}
+</pre>
+
+## selinux::module
+<pre>
+selinux::module { 'rsynclocal':
+  source   => 'puppet:///modules/site/rsynclocal.te'
+  fcontext => true,
+}
+</pre>
+
+The `fcontext` parameter is to specify whether or not a .fc file will be looked
+for in the same directory than the .te file. Defaults to false. The `source`
+parameter for selinux::module is facultative. If you invoke it like this:
+<pre>
+selinux::module { 'rsynclocal':
+  fcontext => true,
+}
+</pre>
+A .te and a .fc file will be taken in puppet:///modules/selinux/rsynclocal.te
+and puppet:///modules/selinux/rsynclocal.fc.
 
 <pre>
 selinux::module { 'rsynclocal':
@@ -42,6 +66,12 @@ selinux::module { 'rsynclocal':
   ensure => 'absent'
 }
 </pre>
+
+# SELinux reference
+
+* *selinux(8)*
+* *man -k selinux* for module specific documentation
+* *audit2allow(1)* to build your modules with audit log on permissive mode
 
 # Contribute
 
