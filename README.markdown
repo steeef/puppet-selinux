@@ -29,13 +29,6 @@ class { 'selinux':
   mode => 'permissive'
 }
 </pre>
-## selinux::boolean
-<pre>
-selinux::boolean { 'allow_ssh_keysign':
-  ensure => present
-}
-</pre>
-
 ## selinux::module
 <pre>
 selinux::module { 'rsynclocal':
@@ -72,6 +65,7 @@ selinux::module { 'rsynclocal':
 * *selinux(8)*
 * *man -k selinux* for module specific documentation
 * *audit2allow(1)* to build your modules with audit log on permissive mode
+* selboolean and selmodule type from puppet
 
 # Contribute
 
@@ -80,6 +74,5 @@ Please see the [Github](https://github.com/spiette/puppet-selinux) page. We'll r
 # Credits
 - Maintainer: Simon Piette <piette.simon@gmail.com>
 - Original module from James Fryman <james@frymanet.com> https://github.com/jfryman/puppet-selinux
-- selinux::booleans is a contribution from GreenOgre <aggibson@cogeco.ca> 
 - Concepts incorporated from:
 http://stuckinadoloop.wordpress.com/2011/06/15/puppet-managed-deployment-of-selinux-modules/
