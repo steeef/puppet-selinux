@@ -1,13 +1,25 @@
 # SELinux Puppet Module
 
-This module can set SELinux and deploy SELinux type enforcement files (.te)
-modules to running RHEL based system. Forked from jfryman, we added:
+This module can set SELinux and compile SELinux type enforcement files (.te)
+into modules deploying them to running RHEL based system. It allows you to keep
+.te files in text form in a repository, while allowing the system to compile
+and manage SELinux modules.
+
+This module features:
 - all enforcing/permissive/disabled switch covered
 - ability to select selinux module directory
 - a file context file (.fc) can be used with a type enforcement (.te) one
-- many bug fixes
+- error detection: it will not silently fails to compile or load a module
+- once loaded, it will not create a new catalog for each run
+- it will only try to load a module if loaded and source version are different.
+- module enable/disable (stay loaded)
+- cleanup if you remove your module
 - puppet lint compliant code
 - full spec testing
+
+SELinux boolean are not part of this module as there's a resource type
+(selboolean) that puppet provides. This module use the other SELinux resource
+type, selmodule to load the module.
 
 # Requirements
 - puppetlabs/stdlib >= 3.0.0
@@ -29,43 +41,66 @@ class { 'selinux':
   mode => 'permissive'
 }
 </pre>
+### Parameters:
+
+- [*mode*]
+   (enforced|permissive|disabled)
+   sets the operating state for SELinux.
+
+- [*installmake*]
+   make is required to install modules. If you have the make package declared
+   elsewhere, you want to set this to false. It defaults to true.
+
 ## selinux::module
 <pre>
 selinux::module { 'rsynclocal':
-  source   => 'puppet:///modules/site/rsynclocal.te'
-  fcontext => true,
+  source   => 'puppet:///modules/site/rsynclocal'
 }
 </pre>
 
-The `fcontext` parameter is to specify whether or not a .fc file will be looked
-for in the same directory than the .te file. Defaults to false. The `source`
-parameter for selinux::module is facultative. If you invoke it like this:
-<pre>
-selinux::module { 'rsynclocal':
-  fcontext => true,
-}
-</pre>
-A .te and a .fc file will be taken in puppet:///modules/selinux/rsynclocal.te
-and puppet:///modules/selinux/rsynclocal.fc.
+`source` will be "puppet:///modules/selinux/${name}" by default.
 
 <pre>
 selinux::module { 'rsynclocal':
   ensure => 'disabled'
 }
 </pre>
+This keep the module installed but disabled. You can also disable system modules.
+
+<pre>
+selinux::module { 'rsynclocal':
+  ensure => 'enabled'
+}
+</pre>
+Note: `ensure` => `present` include `ensure` => `enabled`
 
 <pre>
 selinux::module { 'rsynclocal':
   ensure => 'absent'
 }
 </pre>
+This will remove all files related to rsynclocal on the target system.
+
+### Parameters
+
+- [*ensure*]
+   (present|absent) - sets the state for a module
+
+- [*modules_dir*]
+    The directory where compiled modules will live on a system. Defaults to
+    /usr/share/selinux declared in $selinux::params
+
+- [*source*]
+   Source directory (either a puppet URI or local file) of the SELinux .te
+   module. Defaults to puppet:///modules/selinux/${name}
 
 # SELinux reference
 
 * *selinux(8)*
 * *man -k selinux* for module specific documentation
 * *audit2allow(1)* to build your modules with audit log on permissive mode
-* selboolean and selmodule type from puppet
+* selboolean, selmodule resources type from puppet
+* selrange, selrole, seltype, seluser parameter for the file resource type
 
 # Contribute
 

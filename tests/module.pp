@@ -13,5 +13,5 @@
 
 selinux::module { 'rsynclocal':
   ensure => 'present',
-  source => 'puppet:///modules/selinux/rsynclocal.te',
+  source => 'puppet:///modules/selinux/rsynclocal',
 }
