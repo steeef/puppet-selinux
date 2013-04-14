@@ -1,5 +1,7 @@
 # SELinux Puppet Module
 
+[![Build Status](https://travis-ci.org/spiette/puppet-selinux.png?branch=makefile)](https://travis-ci.org/spiette/puppet-selinux)
+
 This module can set SELinux and compile SELinux type enforcement files (.te)
 into modules deploying them to running RHEL based system. It allows you to keep
 .te files in text form in a repository, while allowing the system to compile
@@ -43,11 +45,13 @@ class { 'selinux':
 </pre>
 ### Parameters:
 
-- [*mode*]
+- *mode*
+
    (enforced|permissive|disabled)
    sets the operating state for SELinux.
 
-- [*installmake*]
+- *installmake*
+
    make is required to install modules. If you have the make package declared
    elsewhere, you want to set this to false. It defaults to true.
 
@@ -58,7 +62,8 @@ selinux::module { 'rsynclocal':
 }
 </pre>
 
-`source` will be "puppet:///modules/selinux/${name}" by default.
+This will place the .te (and .fc if present) file(s) on the target machine, compile into a .pp and load the module.
+`source` will be set to `puppet:///modules/selinux/${name}` by default.
 
 <pre>
 selinux::module { 'rsynclocal':
@@ -83,14 +88,17 @@ This will remove all files related to rsynclocal on the target system.
 
 ### Parameters
 
-- [*ensure*]
-   (present|absent) - sets the state for a module
+- *ensure*
 
-- [*modules_dir*]
+   (present|enabled|disabled|absent) - set the state for a module
+
+- *modules_dir*
+
     The directory where compiled modules will live on a system. Defaults to
     /usr/share/selinux declared in $selinux::params
 
-- [*source*]
+- *source*
+
    Source directory (either a puppet URI or local file) of the SELinux .te
    module. Defaults to puppet:///modules/selinux/${name}
 
@@ -99,8 +107,8 @@ This will remove all files related to rsynclocal on the target system.
 * *selinux(8)*
 * *man -k selinux* for module specific documentation
 * *audit2allow(1)* to build your modules with audit log on permissive mode
-* selboolean, selmodule resources type from puppet
-* selrange, selrole, seltype, seluser parameter for the file resource type
+* *selboolean*, *selmodule* resources type from puppet
+* *selrange*, *selrole*, *seltype*, *seluser* parameters for the file resource type
 
 # Contribute
 
