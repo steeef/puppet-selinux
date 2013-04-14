@@ -14,11 +14,11 @@ describe 'selinux::module', :type => :define do
     let(:title) { modname }
     let(:params) {{
       :source      => source,
-      :modules_dir => modules_dir,
+      :modules_dir => modules_dir
     }}
     let(:facts) { {
         :osfamily      => 'RedHat',
-        :operatingsystemrelease => '6.4',
+        :operatingsystemrelease => '6.4'
     } }
 
     it { should create_class('selinux') }
@@ -34,29 +34,29 @@ describe 'selinux::module', :type => :define do
       .with(
         'ensure'  => 'directory',
         'recurse' => 'remote',
-        'source'  => source,
+        'source'  => source
       ) } 
     it { should create_file("#{this_module_dir}/#{modname}.te")\
       .with(
         'ensure'  => 'file',
-        'source'  => "#{source}/#{modname}.te",
+        'source'  => "#{source}/#{modname}.te"
       ) } 
     it { should create_exec("#{modname}-makemod")\
       .with(
         'command'     => 'make -f /usr/share/selinux/devel/Makefile',
         'refreshonly' => 'true',
-        'cwd'         => this_module_dir,
+        'cwd'         => this_module_dir
       ) }
     it { should create_selmodule(modname)\
       .with(
         'ensure'        => 'present',
         'selmodulepath' => "#{this_module_dir}/#{modname}.pp",
-        'syncversion'   => 'true',
+        'syncversion'   => 'true'
       )}
     it { should create_exec("#{modname}-enable")\
       .with(
         'command' => "semodule -e #{modname}",
-        'onlyif'  => "test -f #{active_modules}/#{modname}.pp.disabled",
+        'onlyif'  => "test -f #{active_modules}/#{modname}.pp.disabled"
       ) }
   end
   [ '4.5', '5.8', '6.4', '7.0', '19' ].each do | osrelease |
@@ -107,7 +107,7 @@ describe 'selinux::module', :type => :define do
       it { should create_exec("#{modname}-#{ensured}")\
         .with(
           'command' => "semodule #{opt} #{modname}",
-          'onlyif'  => "test -f #{tested_file}",
+          'onlyif'  => "test -f #{tested_file}"
         )}
     end
   end
@@ -144,7 +144,7 @@ describe 'selinux::module', :type => :define do
     'file:///usr/local/share/selinux/rsynclocal',
     'puppet:///modules/selinux/rsynclocal/rsynclocal.te',
     'puppet:///modules/selinux/rsynclocal',
-    'puppet:///modules/selinux/rsynclocal/',
+    'puppet:///modules/selinux/rsynclocal/'
   ].each do | source |
     describe "source parameter check #{source}" do
       modname = 'rsynclocal'
