@@ -8,11 +8,20 @@ describe 'selinux' do
     modes.each do |param_mode|
       describe "going from #{current_mode} to #{param_mode}" do 
         let(:params) {{ :mode => param_mode }}
-        let(:facts) { {
-            :osfamily               => 'RedHat',
-            :operatingsystemrelease => '6.4',
-            :selinux_current_mode   => current_mode,
-        } }
+        case current_mode
+        when 'enforcing', 'permissive'
+          let(:facts) { {
+              :osfamily               => 'RedHat',
+              :operatingsystemrelease => '6.4',
+              :selinux_current_mode   => current_mode,
+          } }
+        when 'disabled'
+          let(:facts) { {
+              :osfamily               => 'RedHat',
+              :operatingsystemrelease => '6.4',
+              :selinux                => 'false',
+          } }
+        end
 
         it { should create_class('selinux') }
         it { should create_class('stdlib') }

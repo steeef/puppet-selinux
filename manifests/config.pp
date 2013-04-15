@@ -34,26 +34,30 @@ class selinux::config(
     content => template('selinux/sysconfig_selinux.erb')
   }
 
+  $current_mode = $::selinux? {
+    'false' => 'disabled',
+    default => $::selinux_current_mode
+  }
   # we don't always run setenforce
-  if $::selinux_current_mode != $mode {
+  if $current_mode != $mode {
     # only if there's change
     case $mode {
       'disabled': {
         # we can't apply right now disabled, but we can set it to permissive
-        $change = "from ${::selinux_current_mode} to ${mode}"
+        $change = "from ${current_mode} to ${mode}"
         notify { 'change':
           message => "A reboot is required to change ${change}"
         }
-        if $::selinux_current_mode == 'enforcing' {
+        if $current_mode == 'enforcing' {
           exec { 'setenforce permissive':
             require => Package['libselinux-utils'],
           }
         }
       }
       /^(permissive|enforcing)$/: {
-        if $::selinux_current_mode == 'disabled' {
+        if $current_mode == 'disabled' {
           # we can't set disabled now, it needs a reboot.
-          $change = "from ${::selinux_current_mode} to ${mode}"
+          $change = "from ${current_mode} to ${mode}"
           notify { 'change':
             message => "A reboot is required to change ${change}"
           }
