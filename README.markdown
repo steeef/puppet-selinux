@@ -24,6 +24,7 @@ SELinux boolean are not part of this module as there's a resource type
 type, selmodule to load the module.
 
 # Requirements
+- puppet >= 2.7
 - puppetlabs/stdlib >= 3.0.0
 - RedHat/Fedora based distribution
 
@@ -100,7 +101,7 @@ This will remove all files related to rsynclocal on the target system.
 - *source*
 
    Source directory (either a puppet URI or local file) of the SELinux .te
-   module. Defaults to puppet:///modules/selinux/${name}
+   module. Defaults to `puppet:///modules/selinux/${name}`
 
 # SELinux reference
 
@@ -110,9 +111,13 @@ This will remove all files related to rsynclocal on the target system.
 * *selboolean*, *selmodule* resources type from puppet
 * *selrange*, *selrole*, *seltype*, *seluser* parameters for the file resource type
 
+# Performance impact
+
+Many SELinux commands are slow to execute, especially on changes. Your puppet run could last a couple of minutes if you add a dozen of modules in one shot. If you're using modules, each time `semdule -l` will run (2 seconds easily), just to look if your module is loaded.
+
 # Contribute
 
-Please see the [Github](https://github.com/spiette/puppet-selinux) page. We'll review  pull requests and bug reports. If the module don't do what you want, please explain your use case. Testing on Debian-based distributions is welcome.
+Please see the [Github](https://github.com/spiette/puppet-selinux) page. We'll review  pull requests and bug reports. If the module don't do what you want, please explain your use case.
 
 # Credits
 - Maintainer: Simon Piette <piette.simon@gmail.com>
