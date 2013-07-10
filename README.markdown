@@ -1,6 +1,6 @@
 # SELinux Puppet Module
 
-[![Build Status](https://travis-ci.org/spiette/puppet-selinux.png?branch=makefile)](https://travis-ci.org/spiette/puppet-selinux)
+[![Build Status](https://travis-ci.org/spiette/puppet-selinux.png?branch=master)](https://travis-ci.org/spiette/puppet-selinux)
 
 This module can set SELinux and compile SELinux type enforcement files (.te)
 into modules deploying them to running RHEL based system. It allows you to keep
