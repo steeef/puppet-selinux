@@ -1,5 +1,5 @@
 name    'spiette-selinux'
-version '0.5.1'
+version '0.5.2'
 source 'http://github.com/spiette/puppet-selinux'
 author 'spiette'
 license 'Apache License, Version 2.0'
