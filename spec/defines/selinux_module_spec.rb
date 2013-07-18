@@ -143,6 +143,8 @@ describe 'selinux::module', :type => :define do
     'puppet:///modules/selinux/',
     'file:///usr/local/share/selinux/rsynclocal',
     'puppet:///modules/selinux/rsynclocal/rsynclocal.te',
+    'puppet:///modules/selinux/httpd_rotatelogs/httpd_rotatelogs.te',
+    'puppet:///modules/selinux/httpd_rotatelogs',
     'puppet:///modules/selinux/rsynclocal',
     'puppet:///modules/selinux/rsynclocal/'
   ].each do | source |
