@@ -55,7 +55,7 @@ define selinux::module(
   # we only accept puppet:///modules/<something>/<something>, file:///anything
   # we reject .te
   case $sourcedir {
-    /^puppet:\/\/\/modules\/.*.te/: {
+    /^puppet:\/\/\/modules\/.*.te$/: {
       fail('Invalid source parameter, expecting a directory')
     }
     /^puppet:\/\/\/modules\/[^\/]+\/[^\/]+\/?$/: { }
