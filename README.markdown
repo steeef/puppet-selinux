@@ -95,8 +95,8 @@ This will remove all files related to rsynclocal on the target system.
 
 - *modules_dir*
 
-    The directory where compiled modules will live on a system. Defaults to
-    /usr/share/selinux declared in $selinux::params
+    The directory where modules (source files, .mod and .pp) will live on a
+    system. Defaults to $vardir/selinux, can be changed in $selinux::params.
 
 - *source*
 
@@ -108,7 +108,14 @@ This will remove all files related to rsynclocal on the target system.
    If you want to exclude files of your selinux module to be transferred to
    the node (.svn directories for example), you can add a string to exclude
    or a list of pattern, eg. [ 'CVS', '.svn' ]. Defaults to nothing: all files
-   will be copied.
+   will be copied. You can use resource defaults if you always want to ignore
+   the same pattern:
+
+    <pre>
+    Selinux::Module {
+      ignore => [ 'CVS', '.svn' ]
+    }
+    </pre>
 
 # SELinux reference
 
