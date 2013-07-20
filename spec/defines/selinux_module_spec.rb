@@ -14,7 +14,7 @@ describe 'selinux::module', :type => :define do
     let(:title) { modname }
     let(:params) {{
       :source      => source,
-      :modules_dir => modules_dir
+      :modules_dir => modules_dir,
     }}
     let(:facts) { {
         :osfamily      => 'RedHat',
@@ -32,31 +32,31 @@ describe 'selinux::module', :type => :define do
     it { should create_selinux__module(modname) }
     it { should create_file("#{this_module_dir}")\
       .with(
-        'ensure'  => 'directory',
-        'recurse' => 'remote',
-        'source'  => source
+        :ensure  => 'directory',
+        :recurse => 'remote',
+        :source  => source,
       ) } 
     it { should create_file("#{this_module_dir}/#{modname}.te")\
       .with(
-        'ensure'  => 'file',
-        'source'  => "#{source}/#{modname}.te"
+        :ensure  => 'file',
+        :source  => "#{source}/#{modname}.te"
       ) } 
     it { should create_exec("#{modname}-makemod")\
       .with(
-        'command'     => 'make -f /usr/share/selinux/devel/Makefile',
-        'refreshonly' => 'true',
-        'cwd'         => this_module_dir
+        :command     => 'make -f /usr/share/selinux/devel/Makefile',
+        :refreshonly => 'true',
+        :cwd         => this_module_dir
       ) }
     it { should create_selmodule(modname)\
       .with(
-        'ensure'        => 'present',
-        'selmodulepath' => "#{this_module_dir}/#{modname}.pp",
-        'syncversion'   => 'true'
+        :ensure        => 'present',
+        :selmodulepath => "#{this_module_dir}/#{modname}.pp",
+        :syncversion   => 'true'
       )}
     it { should create_exec("#{modname}-enable")\
       .with(
-        'command' => "semodule -e #{modname}",
-        'onlyif'  => "test -f #{active_modules}/#{modname}.pp.disabled"
+        :command => "semodule -e #{modname}",
+        :onlyif  => "test -f #{active_modules}/#{modname}.pp.disabled"
       ) }
   end
   [ '4.5', '5.8', '6.4', '7.0', '19' ].each do | osrelease |
@@ -106,8 +106,8 @@ describe 'selinux::module', :type => :define do
       } }
       it { should create_exec("#{modname}-#{ensured}")\
         .with(
-          'command' => "semodule #{opt} #{modname}",
-          'onlyif'  => "test -f #{tested_file}"
+          :command => "semodule #{opt} #{modname}",
+          :onlyif  => "test -f #{tested_file}"
         )}
     end
   end
@@ -130,9 +130,9 @@ describe 'selinux::module', :type => :define do
     it {
       should create_file(modules_dir + '/' + modname)\
       .with(
-        'ensure' => 'absent',
-        'purge'  => 'true',
-        'force'  => 'true'
+        :ensure => 'absent',
+        :purge  => 'true',
+        :force  => 'true'
     )}
   end
   # source
@@ -171,7 +171,6 @@ describe 'selinux::module', :type => :define do
         #no source, let's take the default one
         it { should create_file(modules_dir + "/#{modname}/#{modname}.te")\
         .with_source("puppet:///modules/selinux/#{modname}/#{modname}.te") }
-      #when /^puppet:\/\/\/modules\/.*\.te$/
       when /^puppet:.*\.te$/
         # invalid source: we want' a directory
         it { expect { should include_class('selinux::install') }.to\
