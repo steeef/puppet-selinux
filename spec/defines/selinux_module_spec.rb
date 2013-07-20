@@ -11,10 +11,12 @@ describe 'selinux::module', :type => :define do
     modules_dir = '/var/lib/puppet/selinux'
     this_module_dir = "#{modules_dir}/#{modname}"
     source = "puppet:///modules/selinux/#{modname}"
+    ignore = [ 'CVS', '.svn' ]
     let(:title) { modname }
     let(:params) {{
       :source      => source,
       :modules_dir => modules_dir,
+      :ignore      =>  ignore
     }}
     let(:facts) { {
         :osfamily      => 'RedHat',
@@ -35,6 +37,7 @@ describe 'selinux::module', :type => :define do
         :ensure  => 'directory',
         :recurse => 'remote',
         :source  => source,
+        :ignore  => ignore
       ) } 
     it { should create_file("#{this_module_dir}/#{modname}.te")\
       .with(
