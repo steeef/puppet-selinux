@@ -103,6 +103,13 @@ This will remove all files related to rsynclocal on the target system.
    Source directory (either a puppet URI or local file) of the SELinux .te
    module. Defaults to `puppet:///modules/selinux/${name}`
 
+- *ignore*
+
+   If you want to exclude files of your selinux module to be transferred to
+   the node (.svn directories for example), you can add a string to exclude
+   or a list of pattern, eg. [ 'CVS', '.svn' ]. Defaults to nothing: all files
+   will be copied.
+
 # SELinux reference
 
 * *selinux(8)*
