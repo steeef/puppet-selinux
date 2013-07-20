@@ -26,7 +26,7 @@
 # ===  Example
 #
 #    selinux::module { 'rsynclocal':
-#      source => 'puppet:///modules/selinux/rsynclocal.te',
+#      source => 'puppet:///modules/selinux/rsynclocal',
 #    }
 #
 define selinux::module(
