@@ -17,6 +17,12 @@
 #     Source directory (either a puppet URI or local file) of the SELinux .te
 #     module. Defaults to puppet:///modules/selinux/${name}
 #
+#   [*ignore*]
+#     If you want to exclude files of your selinux module to be transferred to
+#     the node (.svn directories for example), you can add a string to exclude
+#     or a list of pattern, eg. [ 'CVS', '.svn' ]. Defaults to nothing: all files
+#     will be copied.
+#
 # ===  Example
 #
 #    selinux::module { 'rsynclocal':
@@ -27,6 +33,7 @@ define selinux::module(
   $ensure  = 'present',
   $source = undef,
   $modules_dir = undef,
+  $ignore = undef,
 ) {
   include selinux
   include selinux::install
@@ -95,6 +102,7 @@ define selinux::module(
         ensure  => directory,
         source  => $sourcedir,
         recurse => remote,
+        ignore  => $ignore,
       }
 
       file { "${this_module_dir}/${name}.te":
