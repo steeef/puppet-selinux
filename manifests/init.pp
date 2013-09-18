@@ -22,7 +22,6 @@ class selinux(
   $mode = 'enforcing',
   $installmake = true,
   ) {
-  include stdlib
   include selinux::params
 
   file { $selinux::params::modules_dir:
@@ -32,9 +31,7 @@ class selinux(
     mode   => '0440',
   }
 
-  anchor { 'selinux::begin': } ->
   class { 'selinux::config':
       mode => $mode,
-  } ->
-  anchor { 'selinux::end': }
+  }
 }
