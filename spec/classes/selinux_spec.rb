@@ -24,7 +24,6 @@ describe 'selinux' do
         end
 
         it { should create_class('selinux') }
-        it { should create_class('stdlib') }
         it { should create_class('selinux::params') }
         it { should create_class('selinux::config') }
         it { should create_package('libselinux-utils') }

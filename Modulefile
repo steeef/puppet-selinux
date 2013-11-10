@@ -8,4 +8,4 @@ description 'This class manages SELinux on RHEL based systems.'
 project_page 'http://github.com/spiette/puppet-selinux'
 
 ## Add dependencies, if any:
-dependency 'puppetlabs/stdlib', '>= 3.0.0'
+#dependency 'puppetlabs/stdlib', '>= 3.0.0'
