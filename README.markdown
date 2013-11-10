@@ -25,7 +25,6 @@ type, selmodule to load the module.
 
 # Requirements
 - puppet >= 2.7
-- puppetlabs/stdlib >= 3.0.0
 - RedHat/Fedora based distribution
 
 # Installation
