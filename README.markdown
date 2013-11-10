@@ -131,7 +131,7 @@ Many SELinux commands are slow to execute, especially on changes. Your puppet ru
 
 # Contribute
 
-Please see the [Github](https://github.com/spiette/puppet-selinux) page. We'll review  pull requests and bug reports. If the module don't do what you want, please explain your use case.
+Please see the [Github](https://github.com/spiette/puppet-selinux) page. We'll review  pull requests and bug reports. If the module don't do what you want, please explain your use case. Please submit your pull requests in the pullrequest branch and make sure tests are running.
 
 # Credits
 - Maintainer: Simon Piette <piette.simon@gmail.com>
