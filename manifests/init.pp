@@ -4,7 +4,7 @@
 #
 # === Parameters:
 #  [*mode*]
-#    (enforced|permissive|disabled)
+#    (enforcing|permissive|disabled)
 #    sets the operating state for SELinux.
 #
 #  [*installmake*]
@@ -19,8 +19,8 @@
 #  include selinux
 #
 class selinux(
-  $mode = 'enforcing',
-  $installmake = true,
+  $mode         = 'enforcing',
+  $installmake  = true,
   ) {
   include selinux::params
 
